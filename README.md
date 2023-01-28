@@ -1,2 +1,5 @@
 # Full_Stack_Application_with_go
-Managing your HTTP session_using_Redis
+Comment:
+
+Chapter 3
+Creating your first HTTP session

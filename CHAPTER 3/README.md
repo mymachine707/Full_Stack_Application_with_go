@@ -2,8 +2,21 @@ Working with Sessions, Error
     Handling, and Caching in Go
     In this chapter, we will cover the following recipes:
     Creating your first HTTP session
+    {
+        Bu faylda session libaryni yuklab oldim 
+        bu code login qilinganda cookie faylga vaqtinchalik id saqlab turadi page to'liq dostup beradi
+        login qilingandan keyin home page ochiladi
+        logout qilingan paytda dostup yopiladi
+
+    }
     Managing your HTTP session using Redis
-    Creating your first HTTP cookie
+    {
+        ishlamadi
+    }
+    Creating your first HTTP cookie 
+    {
+        
+    }
     Implementing caching in Go
     Implementing HTTP error handling in Go
     Implementing login and logout in a web application
