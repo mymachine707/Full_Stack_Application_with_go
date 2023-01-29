@@ -19,7 +19,6 @@ type Route struct {
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
-
 type Routes []Route
 
 var routes = Routes{
@@ -32,14 +31,14 @@ var routes = Routes{
 	Route{
 		"addEmployee",
 		"POST",
-		"/employee/add",
+		"/employee/add/",
 		addEmployee,
 	},
 	Route{
-		"updateEmployee",
-		"PUT",
-		"/employee/update",
-		updateEmployee,
+		"deleteEmployee",
+		"DELETE",
+		"/employee/delete",
+		deleteEmployee,
 	},
 }
 
@@ -61,32 +60,27 @@ func init() {
 func getEmployees(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(employees)
 }
-func updateEmployee(w http.ResponseWriter, r *http.Request) {
+func deleteEmployee(w http.ResponseWriter, r *http.Request) {
 	employee := Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
 	if err != nil {
 		log.Print("error occurred while decoding employee data :: ", err)
 		return
 	}
-
-	var isUpsert = true
-	for idx, emp := range employees {
-		if emp.Id == employee.Id {
-			isUpsert = false
-			log.Printf("updating employee id :: %s with firstName as :: %s and lastName as:: %s ", employee.Id, employee.FirstName, employee.LastName)
-			employees[idx].FirstName = employee.FirstName
-			employees[idx].LastName = employee.LastName
-			break
-		}
-	}
-
-	if isUpsert {
-		log.Printf("upserting employee id :: %s with firstName as :: %s and lastName as:: %s ", employee.Id, employee.FirstName, employee.LastName)
-		employees = append(employees, Employee{Id: employee.Id, FirstName: employee.FirstName, LastName: employee.LastName})
-	}
+	log.Printf("deleting employee id :: %s with firstName as :: %s and lastName as :: %s ", employee.Id,
+		employee.FirstName, employee.LastName)
+	index := GetIndex(employee.Id)
+	employees = append(employees[:index], employees[index+1:]...)
 	json.NewEncoder(w).Encode(employees)
 }
-
+func GetIndex(id string) int {
+	for i := 0; i < len(employees); i++ {
+		if employees[i].Id == id {
+			return i
+		}
+	}
+	return -1
+}
 func addEmployee(w http.ResponseWriter, r *http.Request) {
 	employee := Employee{}
 	err := json.NewDecoder(r.Body).Decode(&employee)
@@ -94,18 +88,22 @@ func addEmployee(w http.ResponseWriter, r *http.Request) {
 		log.Print("error occurred while decoding employee data :: ", err)
 		return
 	}
-	log.Printf("adding employee id :: %s with firstName as :: %s and lastName as :: %s ", employee.Id, employee.FirstName, employee.LastName)
-	employees = append(employees, Employee{Id: employee.Id, FirstName: employee.FirstName, LastName: employee.LastName})
+	log.Printf("adding employee id :: %s with firstName as :: %s and lastName as :: %s ", employee.Id,
+		employee.FirstName, employee.LastName)
+	employees = append(employees, Employee{Id: employee.Id,
+		FirstName: employee.FirstName, LastName: employee.LastName})
 	json.NewEncoder(w).Encode(employees)
 }
-
 func AddRoutes(router *mux.Router) *mux.Router {
 	for _, route := range routes {
-		router.Methods(route.Method).Path(route.Pattern).Name(route.Name).Handler(route.HandlerFunc)
+		router.
+			Methods(route.Method).
+			Path(route.Pattern).
+			Name(route.Name).
+			Handler(route.HandlerFunc)
 	}
 	return router
 }
-
 func main() {
 	muxRouter := mux.NewRouter().StrictSlash(true)
 	router := AddRoutes(muxRouter)
