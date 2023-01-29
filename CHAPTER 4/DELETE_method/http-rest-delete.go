@@ -47,6 +47,7 @@ type Employee struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
+
 type Employees []Employee
 
 var employees []Employee
@@ -55,6 +56,8 @@ func init() {
 	employees = Employees{
 		Employee{Id: "1", FirstName: "Foo", LastName: "Bar"},
 		Employee{Id: "2", FirstName: "Baz", LastName: "Qux"},
+		Employee{Id: "12", FirstName: "Foo", LastName: "Bar"},
+		Employee{Id: "23", FirstName: "Baz", LastName: "Qux"},
 	}
 }
 func getEmployees(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +70,7 @@ func deleteEmployee(w http.ResponseWriter, r *http.Request) {
 		log.Print("error occurred while decoding employee data :: ", err)
 		return
 	}
-	log.Printf("deleting employee id :: %s with firstName as :: %s and lastName as :: %s ", employee.Id,
-		employee.FirstName, employee.LastName)
+	log.Printf("deleting employee id :: %s with firstName as :: %s and lastName as :: %s ", employee.Id, employee.FirstName, employee.LastName)
 	index := GetIndex(employee.Id)
 	employees = append(employees[:index], employees[index+1:]...)
 	json.NewEncoder(w).Encode(employees)
@@ -94,6 +96,7 @@ func addEmployee(w http.ResponseWriter, r *http.Request) {
 		FirstName: employee.FirstName, LastName: employee.LastName})
 	json.NewEncoder(w).Encode(employees)
 }
+
 func AddRoutes(router *mux.Router) *mux.Router {
 	for _, route := range routes {
 		router.
@@ -104,6 +107,7 @@ func AddRoutes(router *mux.Router) *mux.Router {
 	}
 	return router
 }
+
 func main() {
 	muxRouter := mux.NewRouter().StrictSlash(true)
 	router := AddRoutes(muxRouter)
