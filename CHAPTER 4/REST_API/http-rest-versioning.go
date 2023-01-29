@@ -55,6 +55,7 @@ func init() {
 		Employee{Id: "2", FirstName: "Quux", LastName: "Quuz"},
 	}
 }
+
 func getEmployees(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/v1") {
 		json.NewEncoder(w).Encode(employeesV1)
@@ -64,6 +65,7 @@ func getEmployees(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(employees)
 	}
 }
+
 func AddRoutes(router *mux.Router) *mux.Router {
 	for _, route := range routes {
 		router.
@@ -74,6 +76,7 @@ func AddRoutes(router *mux.Router) *mux.Router {
 	}
 	return router
 }
+
 func main() {
 	muxRouter := mux.NewRouter().StrictSlash(true)
 	router := AddRoutes(muxRouter)
